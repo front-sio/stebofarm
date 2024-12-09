@@ -1,0 +1,24 @@
+/src
+  /app
+    /components
+      Hero.tsx
+      Button.tsx
+      Appbar.tsx
+      ProductCard.tsx
+      Cart.tsx
+      Inputs.tsx
+      Dropdowns.tsx
+    /pages
+      index.tsx           // Home page
+      market.tsx          // Market page
+      signup.tsx          // User signup page (for sellers)
+      signin.tsx          // Sign-in page
+      dashboard.tsx       // Dashboard page (protected)
+      order.tsx           // Order page
+      doctor-connect.tsx  // Doctor connect page
+    /layout
+      Layout.tsx          // Main layout for pages
+    /auth
+      useAuth.ts          // Custom hook to manage authentication
+    /styles
+      globals.css        // Global styles
