@@ -5,10 +5,17 @@ import { apiFetch } from "../utils/api";
 export interface Product {
   id: number;
   name: string;
-  image: string;
+  description: string;
   price: number;
-  quantity: number;
+  discountedPrice?: number;
   image_url: string;
+  quantity?: number;
+}
+
+
+export interface Category {
+  id: string;
+  name: string;
 }
 
 // Fetch products from the API
@@ -36,3 +43,11 @@ export async function createProduct(productData: any): Promise<Product> {
     throw new Error('Failed to create product. Please try again later.');
   }
 }
+
+
+
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  const response = await fetch('/categories');
+  return await response.json();
+};

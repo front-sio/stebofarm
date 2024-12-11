@@ -1,8 +1,9 @@
-'use client';  
+'use client';  // This makes the entire layout client-side
 
+import { SessionProvider } from 'next-auth/react';
 
-import Appbar from './components/AppBar';
-import './styles/globals.css'; 
+import '../styles/globals.css'; // Include your global CSS file
+import DashboardAppbar from './components/DashboardSidebar';
 
 export default function RootLayout({
   children,
@@ -16,9 +17,11 @@ export default function RootLayout({
         <title>My Marketplace</title>
       </head>
       <body className="bg-white text-black">
-          <Appbar />
+        <SessionProvider>
+          <DashboardAppbar />
           {/* Wrap the children in the body */}
           {children}
+        </SessionProvider>
       </body>
     </html>
   );

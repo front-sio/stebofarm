@@ -2,7 +2,7 @@
 import React from "react";
 
 const Features = () => (
-  <section className="features py-16 bg-red text-accent">
+  <section className="features py-16 text-accent">
     <div className="container mx-auto text-center">
       <h2 className="text-4xl font-bold">Our Features</h2>
       <p className="mt-4 text-lg">Discover the amazing features of our marketplace!</p>

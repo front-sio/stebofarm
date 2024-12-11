@@ -41,7 +41,7 @@ const Appbar = () => {
 
   return (
     <nav className="navbar fixed top-0 left-0 w-full z-10 bg-white shadow-md">
-      <div className="container flex justify-between items-center py-4 px-6">
+      <div className="container flex justify-between items-center py-4 px-10">
         <div className="logo text-2xl font-bold text-red-600">Brand</div>
         <ul
           className={`flex space-x-6 md:flex ${
@@ -72,23 +72,6 @@ const Appbar = () => {
             <Link href="/signup" className="nav-link">
               Sign Up
             </Link>
-          </li>
-
-          <li>
-            {/* Cart Icon */}
-            {showCartIcon && (
-              <button
-                onClick={() => window.dispatchEvent(new Event("toggleCart"))}
-                className="relative cart-icon"
-              >
-                <FontAwesomeIcon icon={faShoppingCart} className="text-red text-xl" />
-                {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-            )}
           </li>
 
           {/* Mobile menu toggle */}

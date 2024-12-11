@@ -2,7 +2,7 @@
 import React from "react";
 
 const CallToAction = () => (
-  <section className="cta py-16 bg-primary text-secondary text-center">
+  <section className="cta py-16  text-secondary text-center">
     <h2 className="text-4xl font-bold">Ready to Join Us?</h2>
     <p className="mt-4 text-lg">Sign up today and start your journey with us.</p>
     <a
