@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { fetchProducts, fetchCategories, Product, Category } from "../services/productService";
+import { fetchProducts, getCategories, Product, Category } from "../services/productService";
 import { FaSearch, FaCartPlus, FaShoppingBag } from "react-icons/fa";
+import SearchBar from "../components/SearchBar";
+import Categories from '../components/CategoryBar';
 
 const Market: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,8 +13,8 @@ const Market: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>("All");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default sidebar open
-  const [activeLink, setActiveLink] = useState("products"); // Set the default active link
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeLink, setActiveLink] = useState("products");
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -24,18 +26,17 @@ const Market: React.FC = () => {
       }
     };
 
-    const loadCategories = async () => {
-      try {
-        const data = await fetchCategories();
-        setCategories(data);
-      } catch (error) {
-        setError("Failed to load categories. Please try again.");
-      }
-    };
+
+    
+   
 
     loadProducts();
-    loadCategories();
   }, []);
+
+
+
+
+
 
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
@@ -49,6 +50,21 @@ const Market: React.FC = () => {
       }
       return [...prevCart, { ...product, quantity: 1 }];
     });
+  };
+
+  const checkAuth = (): boolean => {
+    const token = localStorage.getItem("authToken"); // Assuming you're storing the token in localStorage
+    return token ? true : false;
+  };
+
+  const handleCheckout = () => {
+    if (!checkAuth()) {
+      alert("You need to be logged in to place an order.");
+      window.location.href = "/login"; // Redirect to login page
+    } else {
+      alert("Proceeding with the order...");
+      // Here, you can proceed with the order logic, like sending the cart to an API
+    }
   };
 
   const handleCategoryClick = (category: string) => {
@@ -72,98 +88,52 @@ const Market: React.FC = () => {
         }`}
         style={{ top: "10rem" }}
       >
-        <div
-          className={`Active cursor-pointer w-[210px] h-14 relative mb-6 ${
-            activeLink === "products" ? "bg-yellow-200" : ""
-          }`}
-          onClick={() => handleLinkClick("products")}
-        >
-          <div className="Rectangle13 w-full h-full bg-gray-200 rounded-md"></div>
-          <div className="Products absolute left-6 top-4 text-black text-base font-medium font-['Inter']">
-            Products
-          </div>
-          <div className="Line4 w-[54px] h-0 absolute left-1 top-14 origin-top-left -rotate-90 border-4 border-yellow-400"></div>
-        </div>
-
         {/* Sidebar Links */}
         <div className="flex flex-col gap-2">
-          <div
-            className={`cursor-pointer ${activeLink === "orders" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("orders")}
-          >
-            My Orders
+          <div>
+           {activeLink === 'featuredProduct' ? <div className="Line4 w-[54px] h-[0px] left-[1px] top-[54px] absolute origin-top-left -rotate-90 border-4 border-[#ffd722]"></div> : <div></div>}
+            <div
+              className={`cursor-pointer ${activeLink === "featuredProduct" ? "Rectangle13 w-[210px] h-[54px] left-0 top-0 absolute bg-zinc-100" : ""}`}
+              onClick={() => handleLinkClick("featuredProduct")}
+            >
+              Featured Products
+            </div>
           </div>
+
           <div
-            className={`cursor-pointer ${activeLink === "myProducts" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("myProducts")}
+            className={`cursor-pointer ${activeLink === "trendingProducts" ? "bg-yellow-200" : ""}`}
+            onClick={() => handleLinkClick("trendingProducts")}
           >
-            My Products
+            Trending Products
           </div>
+
           <div
-            className={`cursor-pointer ${activeLink === "expert" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("expert")}
+            className={`cursor-pointer ${activeLink === "farmers" ? "bg-yellow-200" : ""}`}
+            onClick={() => handleLinkClick("farmers")}
           >
-            Connect to Expert
+            Farmers
           </div>
-          <div
-            className={`cursor-pointer ${activeLink === "community" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("community")}
-          >
-            Community
-          </div>
-          <div
-            className={`cursor-pointer ${activeLink === "favorites" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("favorites")}
-          >
-            Favorites
-          </div>
-          <div
-            className={`cursor-pointer ${activeLink === "trackProduct" ? "bg-yellow-200" : ""}`}
-            onClick={() => handleLinkClick("trackProduct")}
-          >
-            Track Product
-          </div>
-          <div
-            className={`cursor-pointer text-red-500 font-bold ${
-              activeLink === "logout" ? "bg-yellow-200" : ""
-            }`}
-            onClick={() => handleLinkClick("logout")}
-          >
-            Logout
-          </div>
+          {/* More links */}
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 p-8 ml-64 mt-24">
-        {/* Categories and Cart */}
-          <div className="CategoryContainer w-full h-16 px-16 bg-red-50 flex items-center gap-8 rounded-lg shadow-md mb-8">
-            {/* Cart Icon */}
-            <div
-              className="Cart w-18 h-18 p-4 bg-red rounded-full flex items-center justify-center shadow-lg cursor-pointer"
-              onClick={() => setIsCartOpen(!isCartOpen)}
-            >
-              <FaShoppingBag className="w-8 h-8 text-white" />
-              {cart.length > 0 && (
-                <span className="absolute top-0 right-0 w-5 h-5 bg-yellow-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {cart.reduce((total, item) => total + (item.quantity || 0), 0)}
-                </span>
-              )}
-            </div>
-            {/* Categories */}
-            <div className="flex flex-grow gap-8">
-              {categories.map((category) => (
-                <span
-                  key={category.id}
-                  className="text-black text-base font-medium font-['Inter'] cursor-pointer"
-                  onClick={() => handleCategoryClick(category.name)}
-                >
-                  {category.name}
-                </span>
-              ))}
-            </div>
+          <div className="Cart w-[72px] h-[72px] pl-[19px] pr-5 py-[19.50px] bg-[#d30404] rounded-[36px] justify-center items-center inline-flex">
+            <FaShoppingBag  size={24} className="text-white"/>
+          </div>
+          {/* Categories */}
+          <div 
+          className="CategoryContainer w-[967px] h-[66px] pl-[66px] pr-[17px] py-[21px] bg-[#fff8f8] justify-end items-center inline-flex" 
+          style={{
+            margin: '18px'
+          }}
+          >
           </div>
 
+
+        <SearchBar />
+        
 
         {/* Render Active Content */}
         {activeLink === "products" && (
@@ -199,14 +169,15 @@ const Market: React.FC = () => {
           </div>
         )}
 
-        {/* Other Components for My Orders, My Products, etc. */}
-        {activeLink === "orders" && <div>My Orders Content</div>}
-        {activeLink === "myProducts" && <div>My Products Content</div>}
-        {activeLink === "expert" && <div>Connect to Expert Content</div>}
-        {activeLink === "community" && <div>Community Content</div>}
-        {activeLink === "favorites" && <div>Favorites Content</div>}
-        {activeLink === "trackProduct" && <div>Track Product Content</div>}
-        {activeLink === "logout" && <div>Logout Content</div>}
+        {/* Checkout Button */}
+        {cart.length > 0 && (
+          <button
+            className="mt-4 bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
+            onClick={handleCheckout}
+          >
+            Proceed to Checkout
+          </button>
+        )}
       </main>
 
       {/* Cart Sidebar */}
@@ -235,7 +206,7 @@ const Market: React.FC = () => {
           </div>
           <button
             className="mt-4 bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
-            onClick={() => alert("Proceed to checkout")}
+            onClick={handleCheckout}
           >
             Proceed to Checkout
           </button>

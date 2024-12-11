@@ -47,7 +47,7 @@ export async function createProduct(productData: any): Promise<Product> {
 
 
 
-export const fetchCategories = async (): Promise<Category[]> => {
+export const getCategories = async (): Promise<Category[]> => {
   const response = await fetch('/categories');
   return await response.json();
 };

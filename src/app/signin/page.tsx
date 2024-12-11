@@ -1,9 +1,8 @@
-// src/app/components/Signin.tsx
-
 'use client'; // Add this to make it a client-side component
+"disable-eslint"
 
 import React, { useState } from 'react';
-import { loginUser } from '../services/loginService';
+import { loginUser } from '../services/authService';
 
 const Signin = () => {
   const [email, setEmail] = useState('');
@@ -19,8 +18,10 @@ const Signin = () => {
     try {
       // Call the login service
       const response = await loginUser(email, password);
-      // Store the token in localStorage
-      localStorage.setItem('access_token', response.accessToken);
+
+      // Store the token and user data in localStorage
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('user', JSON.stringify(response.user));  // Store user info if needed
 
       // Navigate to the dashboard using window.location
       window.location.href = '/dashboard'; // Use window.location for client-side navigation

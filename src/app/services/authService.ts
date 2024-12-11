@@ -1,3 +1,4 @@
+// src/app/services/authService.ts
 import { apiFetch } from "../utils/api";
 
 interface User {
@@ -9,11 +10,9 @@ interface User {
 
 interface SignInResponse {
   access_token: string;
-  user: User; // Ensure user is defined in the response
+  user: User;
 }
 
-
-// services/loginService.ts
 export async function loginUser(email: string, password: string) {
   try {
     // Call your backend API for user authentication
@@ -23,6 +22,7 @@ export async function loginUser(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     });
 
+    // If the response status is not OK, throw an error
     if (!response.ok) {
       throw new Error('Failed to authenticate');
     }
@@ -30,15 +30,16 @@ export async function loginUser(email: string, password: string) {
     // Assuming the response includes user data and accessToken
     const data = await response.json();
     return {
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      accessToken: data.accessToken,
-      role: data.role,
+      accessToken: data.access_token,
+      user: {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login failed:', error);
-    throw error;
+    throw error;  // Re-throw to be handled by component
   }
 }
-

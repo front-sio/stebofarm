@@ -1,15 +1,4 @@
-// next-auth.d.ts
-import { Session } from "next-auth";
-
-declare module "next-auth" {
-  interface Session {
-    accessToken?: string;
-  }
-}
-
-// api.ts
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'; // Fallback to localhost in development
-import { getSession } from 'next-auth/react';
 
 /**
  * Utility function to make API requests using Fetch API
@@ -17,19 +6,14 @@ import { getSession } from 'next-auth/react';
  * @param options - Fetch options such as method, headers, body, etc.
  * @returns JSON-parsed response or throws an error
  */
-
-
 export async function apiFetch(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<any> {
   const url = `${BASE_URL}${endpoint}`;
 
-  // Get the session to retrieve the accessToken
-  const session = await getSession();
-  console.log('Session:', session); // Log session to debug
-  console.log(session);
-  const accessToken = session?.accessToken;
+  // Get the accessToken from localStorage
+  const accessToken = localStorage.getItem('accessToken');
 
   const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',

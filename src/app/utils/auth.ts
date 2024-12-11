@@ -1,23 +1,28 @@
-import { getSession } from 'next-auth/react';
-import { apiFetch } from './api';
+// /src/utils/fetchWithAuth.ts
 
 /**
- * Utility function to fetch data with authentication
+ * Utility function to fetch data with authentication from local storage
  * @param endpoint - API endpoint
  * @returns JSON response with authentication
  */
 export async function fetchWithAuth(endpoint: string) {
-  const session = await getSession();
+  // Retrieve the access token from local storage
+  const accessToken = localStorage.getItem('accessToken');
 
-  if (!session || !session.user.accessToken) {
+  if (!accessToken) {
     throw new Error('Not authenticated');
   }
 
-  const response = await apiFetch(endpoint, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${endpoint}`, {
     headers: {
-      Authorization: `Bearer ${session.user.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
   });
 
-  return response;
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+
+  return response.json();
 }
