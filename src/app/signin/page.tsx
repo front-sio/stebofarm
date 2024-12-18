@@ -21,7 +21,7 @@ const Signin = () => {
 
       // Store the token and user data in localStorage
       localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('user', JSON.stringify(response.user));  // Store user info if needed
+      localStorage.setItem('user', JSON.stringify(response.user)); // Store user info if needed
 
       // Navigate to the dashboard using window.location
       window.location.href = '/dashboard'; // Use window.location for client-side navigation
@@ -33,7 +33,7 @@ const Signin = () => {
   };
 
   return (
-    <div className="flex flex-row w-screen h-screen bg-white">
+    <div className="flex flex-row w-screen h-screen bg-white overflow-hidden">
       {/* Left Side (Form Section) */}
       <div className="flex flex-col justify-center items-center w-1/2 bg-white px-12">
         <h1 className="text-4xl font-semibold text-gray-800 mb-6">Welcome Back</h1>
@@ -80,15 +80,15 @@ const Signin = () => {
       </div>
 
       {/* Right Side (Image Section) */}
-      <div className="w-1/2 bg-gradient-to-b from-black to-gray-900 text-white flex flex-col justify-center items-center rounded-tl-[80px] rounded-bl-[80px]">
-        <div className="text-center px-12">
+      <div className="relative w-1/2 bg-gradient-to-b from-black to-gray-900 text-white flex justify-center items-center rounded-tl-[80px] rounded-bl-[80px]">
+        <div className="absolute text-center px-12 z-10">
           <h2 className="text-3xl font-semibold">Empower Your Future</h2>
           <p className="mt-4 text-lg">Sign in to explore more opportunities</p>
         </div>
         <img
           src="/assets/images/farmer1.jpg"
-          alt="Sign In"
-          className="mt-6 w-3/4 h-auto rounded-lg shadow-lg"
+          alt="Farmer working in the field"
+          className="absolute inset-0 w-full h-full object-cover rounded-tl-[80px] rounded-bl-[80px] opacity-80"
         />
       </div>
     </div>

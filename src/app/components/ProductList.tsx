@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, Product } from '../services/productService';
+import { fetchProducts } from '../services/productService';
+import { Product } from '../utils/type';
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

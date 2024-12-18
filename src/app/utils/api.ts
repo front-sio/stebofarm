@@ -35,22 +35,31 @@ export async function apiFetch(
   try {
     const response = await fetch(url, config);
 
-    if (!response.ok) {
-      const errorResponse = await response.text();
+    // Check if the response is a valid fetch response
+    if (!response || !response.ok) {
+      const errorResponse = await response.text(); // This ensures we handle the error response correctly.
       let errorMessage = `Error ${response.status}: Unknown error`;
 
       try {
         const parsedError = JSON.parse(errorResponse);
         errorMessage = parsedError.message || errorMessage;
       } catch (e) {
-        errorMessage = errorResponse;
+        errorMessage = errorResponse; // Fallback to raw error text if parsing fails
       }
 
       throw new Error(errorMessage);
     }
 
-    // Parse and return the JSON response
-    return response.json();
+    // Ensure response is valid before calling .json()
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      // If response is not JSON, treat it as plain text or another format
+      const textResponse = await response.text();
+      console.warn('Response is not JSON, received:', textResponse);
+      return textResponse;
+    }
   } catch (error: any) {
     console.error('API Fetch Error:', error);
     throw new Error(error.message || 'Network error');

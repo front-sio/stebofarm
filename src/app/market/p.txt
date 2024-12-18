@@ -2,41 +2,86 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BsCart4 } from "react-icons/bs";
-import { fetchoffers } from "../services/productService"; // Import the fetchProducts function
-import { CartItem, Product } from "../utils/type";
-import ProductCard from "../components/ProductCard";
 
-// Shimmer Effect Component (for loading state)
-const Shimmer: React.FC = () => (
-  <div className="w-full sm:w-[247px] h-[380px] bg-gray-300 animate-pulse rounded-lg">
-    <div className="w-full h-[218px] bg-gray-400 rounded-t-lg"></div>
-    <div className="p-3">
-      <div className="h-[20px] bg-gray-400 mb-2 rounded"></div>
-      <div className="h-[10px] bg-gray-400 mb-4 rounded"></div>
-      <div className="flex justify-between items-center">
-        <div className="w-16 h-[10px] bg-gray-400 rounded"></div>
-        <div className="w-16 h-[10px] bg-gray-400 rounded"></div>
+// Interface Definitions
+interface Product {
+  id: number;
+  image: string;
+  title: string;
+  description: string;
+  originalPrice: string; // Price in TZS
+  discountedPrice: string; // Price in TZS
+  seller: string;
+  minOrder: string;
+  maxOrder: string;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
+
+const products: Product[] = [
+  {
+    id: 1,
+    image: "https://via.placeholder.com/247x218",
+    title: "Fresh Mangoes",
+    description: "Sweet and juicy mangoes from the farm.",
+    originalPrice: "TSh 15000", // Price in TZS
+    discountedPrice: "TSh 12000", // Price in TZS
+    seller: "Sold by: Fresh Farms",
+    minOrder: "1 kg",
+    maxOrder: "20 kg",
+  },
+  {
+    id: 2,
+    image: "https://via.placeholder.com/247x218",
+    title: "Organic Apples",
+    description: "Crisp and fresh organic apples.",
+    originalPrice: "TSh 10000", // Price in TZS
+    discountedPrice: "TSh 8000", // Price in TZS
+    seller: "Sold by: Apple Orchard",
+    minOrder: "1 kg",
+    maxOrder: "10 kg",
+  },
+];
+
+// Product Card Component
+const ProductCard: React.FC<{
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  onViewDetails: (productId: number) => void;
+}> = ({ product, onAddToCart, onViewDetails }) => (
+  <div className="w-full sm:w-[247px] h-[380px] bg-white shadow rounded-lg flex flex-col">
+    <img
+      className="w-full h-[218px] rounded-t-lg object-cover"
+      src={product.image}
+      alt={product.title}
+    />
+    <div className="p-3 flex-grow">
+      <h3 className="text-[15px] font-medium capitalize">{product.title}</h3>
+      <p className="text-[8px] text-gray-600">{product.description}</p>
+      <div className="flex justify-between items-center mt-2">
+        <span className="line-through text-gray-400 text-xs">{product.originalPrice}</span>
+        <span className="text-black font-medium text-[11px]">{product.discountedPrice}</span>
       </div>
+      <p className="text-[7px] text-gray-500 mt-1">{product.seller}</p>
     </div>
-  </div>
-);
-
-// Modal Component
-const Modal: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => (
-  <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] text-center">
-      <h3 className="text-xl font-semibold">{message}</h3>
+    <div className="flex">
       <button
-        className="mt-4 py-2 px-4 bg-red-500 text-white rounded"
-        onClick={onClose}
+        className="w-1/2 py-1 bg-primary rounded-bl-lg text-[10px]"
+        onClick={() => onViewDetails(product.id)}
       >
-        Close
+        View Details
+      </button>
+      <button
+        className="w-1/2 py-1 bg-red rounded-br-lg text-[10px] text-white"
+        onClick={() => onAddToCart(product)}
+      >
+        Add to Cart
       </button>
     </div>
   </div>
 );
-
-
 
 // Cart Component
 const Cart: React.FC<{
@@ -51,8 +96,8 @@ const Cart: React.FC<{
       <ul className="space-y-4">
         {cartItems.map((item) => (
           <li key={item.id} className="flex justify-between items-center">
-            <span>{item.name} (x{item.quantity})</span>
-            <span>{item.discountedPrice ?? item.price}</span>
+            <span>{item.title} (x{item.quantity})</span>
+            <span>{item.discountedPrice}</span>
           </li>
         ))}
       </ul>
@@ -69,28 +114,8 @@ const Cart: React.FC<{
 // Main Market Component
 const Market: React.FC = () => {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track modal state
-
-  // Fetch products from the API on component mount
-  useEffect(() => {
-    const loadOffers = async () => {
-      try {
-        const fetchedoffers = await fetchoffers();
-  
-        if (fetchedoffers.length === 0) {
-          setIsModalOpen(true); // Show modal if no products are found
-        } else {
-          setProducts(fetchedoffers);
-        }
-      } catch (error) {
-        console.error("Failed to load products:", error);
-      }
-    };
-    loadOffers();
-  }, []);
 
   // Load cart from localStorage on component mount
   useEffect(() => {
@@ -110,26 +135,19 @@ const Market: React.FC = () => {
   const handleAddToCart = (product: Product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
-      const price = (product.discountedPrice ?? product.price).toString(); // Ensure price is a string
-  
       if (existingItem) {
         return prevCart.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1, price }
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-  
-      return [
-        ...prevCart,
-        { ...product, quantity: 1, price, discountedPrice: price } // Ensure price and discountedPrice are strings
-      ];
+      return [...prevCart, { ...product, quantity: 1 }];
     });
   };
-  
 
   const handleViewDetails = (productId: number) => {
-    router.push(`/offers/${productId}`);
+    router.push(`/products/${productId}`);
   };
 
   const handleCheckout = () => {
@@ -144,8 +162,6 @@ const Market: React.FC = () => {
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
-
-  const closeModal = () => setIsModalOpen(false); // Close the modal
 
   return (
     <div className="container mx-auto p-16">
@@ -164,16 +180,14 @@ const Market: React.FC = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {products.length === 0
-          ? Array.from({ length: 4 }).map((_, index) => <Shimmer key={index} />) // Show shimmer effect while loading
-          : products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                onViewDetails={handleViewDetails}
-              />
-            ))}
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onAddToCart={handleAddToCart}
+            onViewDetails={handleViewDetails}
+          />
+        ))}
       </div>
 
       {/* Cart Side Panel */}
@@ -199,9 +213,6 @@ const Market: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Modal for No Products Found */}
-      {isModalOpen && <Modal message="No products found" onClose={closeModal} />}
     </div>
   );
 };

@@ -1,22 +1,6 @@
 import { apiFetch } from "../utils/api";
+import { Product } from "../utils/type";
 
-
-// Define Product interface
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  discountedPrice?: number;
-  image_url: string;
-  quantity?: number;
-}
-
-
-export interface Category {
-  id: string;
-  name: string;
-}
 
 // Fetch products from the API
 export async function fetchProducts(): Promise<Product[]> {
@@ -29,25 +13,57 @@ export async function fetchProducts(): Promise<Product[]> {
   }
 }
 
+// src/app/services/productService.ts
+export const createProduct = async (formData: FormData) => {
+  const response = await apiFetch("/products", {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to create product");
+  }
+  return await response.json();
+};
 
-// Create a product
-export async function createProduct(productData: any): Promise<Product> {
+// Function to create a new category
+export const createCategory = async (categoryData: { name: string }) => {
+  const response = await fetch("/categories", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(categoryData),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to create category");
+  }
+  return response.json();
+};
+
+
+
+// Update a product
+export async function updateProduct(productId: number, productData: any): Promise<Product> {
   try {
-    const newProduct = await apiFetch('/products', {
-      method: 'POST',
-      body: productData, // Ensure you are sending FormData here
+    const updatedProduct = await apiFetch(`/products/${productId}`, {
+      method: 'PUT',
+      body: productData, // Send the updated data, which can also include FormData for images
     });
-    return newProduct;
+    return updatedProduct;
   } catch (error) {
-    console.error('Error creating product:', error);
-    throw new Error('Failed to create product. Please try again later.');
+    console.error('Error updating product:', error);
+    throw new Error('Failed to update product. Please try again later.');
   }
 }
 
 
 
-
-export const getCategories = async (): Promise<Category[]> => {
-  const response = await fetch('/categories');
-  return await response.json();
-};
+export async function fetchoffers(): Promise<Product[]> {
+  try {
+    const products = await apiFetch('/products');
+    return products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw new Error('Failed to load products. Please try again later.');
+  }
+}

@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  .products-page {
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    width: 30%;
+  }
+  
+  .card p {
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .card h1 {
+    margin: 10px 0;
+  }
+  
+  .card button {
+    background-color: #ffd700;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f5f5f5;
+  }
+  
+  td a {
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  tbody tr:nth-child(odd) {
+    background-color: #ffd700;
+  }
+  
+  
